@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>Kormilec</title>
+    <script src="https://unpkg.com/vue"></script>  </head>
+  <body>
+    <div id="app">
+      <header>	//#A
+        <h1 v-text="sitename"></h1>	//#B
+      </header>	//#A
+    </div>
+<script type="text/javascript">
+      var webstore = new Vue({
+        el: '#app', 
+        data: {	//#C
+          sitename: 'Магазин'	//#D
+        }	//#C
+      });
+    </script>
+  </body>
+</html>

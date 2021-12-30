@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>Kormilec</title>
+    <script src="https://unpkg.com/vue"></script>	
+    
+      <link rel="stylesheet" type="text/css" href="assets/css/app.css"/> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    crossorigin="anonymous">
+  </head>
+  <body>
+    <div id="app">
+      <header>	
+        <h1 v-text="sitename"></h1>	
+      </header>	
+    <main>
+     <div class="col"> 
+       <figure>
+        <img v-bind:src="product.keyart"> 
+       </figure>
+     </div>
+     <div class="col col-expand"> 
+       <h1 v-text="product.title"> </h1>
+       <h3 v-text="product.annotation"> </h3>
+       <h3 v-text="product.price"> </h3>
+     </div>
+    </main>
+  </div>
+    <script type="text/javascript">
+      var webstore = new Vue({	
+        el: '#app' ,	
+        data: {	
+              sitename: 'Магазин' ,
+              product: {	
+                       id: 1001,     	
+                       title: "хлеб ржаной",	
+                       annotation: "Этот хлеб не содержит <em>хлебопекарных дрожжей</em>,"+	
+                        "на ржаной закваске.",	
+                       price: 30,
+                       keyart: "assets/images/162679.jpg"	
+             }	
+                       },	
+                           });	
+    </script>
+
+  </body>
+</html>
