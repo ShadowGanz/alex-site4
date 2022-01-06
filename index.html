@@ -1,8 +1,9 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
     <title>Kormilec</title>
     <script src="https://unpkg.com/vue"></script>	
-    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <link rel="stylesheet" type="text/css" href="assets/css/app.css"/> 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
     crossorigin="anonymous">
@@ -20,8 +21,12 @@
      </div>
      <div class="col col-expand"> 
        <h1 v-text="product.title"> </h1>
-       <h3 v-text="product.annotation"> </h3>
-       <h3 v-text="product.price"> </h3>
+       <h3 v-html="product.annotation"> </h3>
+       <h3 class="price">  
+         {{ product.price | formatPrice }}
+       </h3>
+       <button class="default"
+       @click="addToCart"> В корзину </button>
      </div>
     </main>
   </div>
@@ -35,11 +40,35 @@
                        title: "хлеб ржаной",	
                        annotation: "Этот хлеб не содержит <em>хлебопекарных дрожжей</em>,"+	
                         "на ржаной закваске.",	
-                       price: 30,
+                       price: 3000,
                        keyart: "assets/images/162679.jpg"	
-             }	
-                       },	
-                           });	
+              },	
+              cart: []
+        },
+              filters: {	
+                formatPrice: function(price) {	
+                 if (!parseInt(price)) { return "исправьте формат цены"; }	
+                 if (price > 99999) {	
+                   var priceString = (price / 100).toFixed(2);	
+                   var priceArray = priceString.split("").reverse();	
+                   var index = 3;	
+                    while (priceArray.length > index + 3) {	
+                     priceArray.splice(index+3, 0, " ");	
+                     index += 4;	
+                    }	
+                    return priceArray.reverse().join("") + " руб.";	
+                  } else {
+                    return (price / 100).toFixed(2) + " руб.";	
+                   }
+                }
+              },
+              methods: {
+                addToCart: function() {
+                  this.cart.push( this.product.id );
+                }
+              }
+
+         });	
     </script>
 
   </body>
