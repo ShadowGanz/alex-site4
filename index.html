@@ -4,32 +4,146 @@
     <title>Kormilec</title>
     <script src="https://unpkg.com/vue"></script>	
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <link rel="stylesheet" type="text/css" href="assets/css/app.css"/> 
+    <link rel="stylesheet" type="text/css" href="assets/css/app.css"> 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
     crossorigin="anonymous">
   </head>
   <body>
     <div id="app">
       <header>	
-        <h1 v-text="sitename"></h1>	
+        <div class="navbar navbar-default">
+          <div class="navbar-header">
+          <h1 v-text="sitename"></h1>	
+          </div>
+          <div class="nav navbar-nav navbar-right cart">
+            <button type="button"
+              class="btn btn-default btn-lg"
+              v-on:click="showCheckout">           
+            <span class="glyphicon glyphicon-shopping-cart">
+              {{ cartItemCount }} 
+            </span> 
+            Оформить заказ
+            </button> 
+          </div>
+        </div>
       </header>	
     <main>
-     <div class="col"> 
-       <figure>
-        <img v-bind:src="product.keyart"> 
-       </figure>
-     </div>
-     <div class="col col-expand"> 
+    <div class="row product">
+        <div v-if="showProduct"> 
+          <div class="col-md-2 col-md-offset-1">
+          <figure>
+            <img v-bind:src="product.keyart"> 
+          </figure>
+          </div>
+     <div class="col-md-6 col-md-offset-2 description">
        <h1 v-text="product.title"> </h1>
        <h3 v-html="product.annotation"> </h3>
        <h3 class="price">  
          {{ product.price | formatPrice }}
        </h3>
        <button class="default"
-       @click="addToCart"> В корзину </button>
+         @click="addToCart" 
+         v-if="canAddToCart"
+        > В корзину  
+       </button>
+       <button class="disabled"
+       v-else
+        > Товар закончился
+       </button>
      </div>
+      </div>
+     <div v-else>
+      <div class="col-md-6">
+        <strong>Имя:</strong>
+        <input v-model="order.firstName" 	
+          class="form-control"/>  
+      </div>
+      <div class="col-md-6">
+        <strong>Фамилия:</strong>
+        <input v-model="order.lastName" 
+         class="form-control"/>  
+      </div>
+      <div class="form-group">
+        <div class="col-md-12"><strong>Address:</strong></div>
+        <div class="col-md-12">
+          <input v-model="order.address"                      
+            class="form-control" />
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-12"><strong>City:</strong></div>
+        <div class="col-md-12">
+          <input v-model="order.city"                      
+            class="form-control" />
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-2">
+        <strong>State:</strong>
+          <select v-model="order.state"                
+            class="form-control">
+            <option disabled value="">State</option>
+            <option>AL</option>
+            <option>AR</option>
+            <option>CA</option>
+            <option>NV</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-6 col-md-offset-4">
+        <strong>Zip / Postal Code:</strong>
+          <input v-model="order.zip"  			
+            class="form-control"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-6 boxes">
+          <input type="checkbox"
+       id="gift"
+       value="true"
+       v-bind:true-value="order.sendGift"
+       v-bind:false-value="order.dontSendGift"
+       v-model="order.gift">       				
+          <label for="gift">Ship As Gift?</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-6 boxes">
+          <input type="radio"
+            id="home"
+            value="Home"
+            v-model="order.method">                                   
+          <label for="home">Home</label>
+          <input type="radio"
+            id="business"
+            value="Business"
+            v-model="order.method"> 				
+          <label for="business">Business</label>
+        </div>
+      </div>
+      <div class="col-md-12 verify">		       
+        <pre>
+          First Name: {{order.firstName}}
+           Last Name: {{order.lastName}}
+             Address: {{order.address}}
+                City: {{order.city}}
+                 Zip: {{order.zip}}
+               State: {{order.state}}
+              Method: {{order.method}}
+                Gift: {{order.gift}}
+        </pre>
+      </div>
+      <div class="form-group">
+        <div class="col-md-6">
+          <button type="submit" 
+            class="btn btn-primary submit" 
+            v-on:click="submitForm">Place Order</button> 
+        </div>
+     </div>
+    </div>
     </main>
-  </div>
+    </div>
     <script type="text/javascript">
       var webstore = new Vue({	
         el: '#app' ,	
@@ -41,10 +155,22 @@
                        annotation: "Этот хлеб не содержит <em>хлебопекарных дрожжей</em>,"+	
                         "на ржаной закваске.",	
                        price: 3000,
-                       keyart: "assets/images/162679.jpg"	
+                       keyart: "assets/images/162679.jpg"	 
               },	
-              cart: []
-        },
+              cart: [],
+              availableInventory: 5,
+              showProduct: true,
+              order: {
+                firstName: '' ,
+                lastName: '' , 
+                address: '' ,
+                city: '' ,
+                zip: '' ,
+                state: '' ,
+                method: 'Home' ,
+                gift: true 
+              },
+         }, 
               filters: {	
                 formatPrice: function(price) {	
                  if (!parseInt(price)) { return "исправьте формат цены"; }	
@@ -63,13 +189,25 @@
                 }
               },
               methods: {
+                submitForm() {
+                  alert('Заказ принят');
+                },
                 addToCart: function() {
                   this.cart.push( this.product.id );
+                },
+                showCheckout() {
+                  this.showProduct = this.showProduct ? false : true;
                 }
-              }
-
+              },
+              computed: {                        
+                cartItemCount: function() {      
+                  return this.cart.length || '';       
+                },
+                canAddToCart: function() {     
+                  return this.availableInventory > this.cartItemCount;    
+                }
+              },                                  
          });	
     </script>
-
   </body>
 </html>
