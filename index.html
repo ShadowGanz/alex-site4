@@ -1,12 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!-- прототип интернет-магазина 'хлеб' -->
+<html> 
   <head>
-    <title>Kormilec</title>
+    <title>Хлеб с доставкой, в Симферополе</title>
     <script src="https://unpkg.com/vue"></script>	
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" type="text/css" href="assets/css/app.css"> 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
     crossorigin="anonymous">
+    <!-- отличие подключения через link(подключение) от script(вызов внешнего кода JS) -->
   </head>
   <body>
     <div id="app">
@@ -79,14 +81,13 @@
       </div>
       <div class="form-group">
         <div class="col-md-2">
-        <strong>State:</strong>
+        <strong>Район:</strong>
           <select v-model="order.state"                
             class="form-control">
-            <option disabled value="">State</option>
-            <option>AL</option>
-            <option>AR</option>
-            <option>CA</option>
-            <option>NV</option>
+            <option disabled value="">Район</option>
+            <option v-for="state in states"
+                    v-bind:value="state">
+            </option>
           </select>
         </div>
       </div>
@@ -112,9 +113,9 @@
         <div class="col-md-6 boxes">
           <input type="radio"
             id="home"
-            value="Home"
+            value="домашняя доставка"
             v-model="order.method">                                   
-          <label for="home">Home</label>
+          <label for="home">На дом</label>
           <input type="radio"
             id="business"
             value="Business"
@@ -167,9 +168,17 @@
                 city: '' ,
                 zip: '' ,
                 state: '' ,
-                method: 'Home' ,
-                gift: true 
+                method: 'домашняя доставка' ,
+                gift: true,
+                sendGift: 'Особенная упаковка',
+                dontSendGift: 'Простая упаковка' 
               },
+              states: [
+                'Киевский' ,
+                'Железнодорожный',
+                'ГРЭС' ,
+                'Свобода'
+              ]
          }, 
               filters: {	
                 formatPrice: function(price) {	
