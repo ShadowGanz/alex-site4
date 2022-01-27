@@ -30,7 +30,7 @@
         </div>
       </header>	
     <main>
-    <div class="row product">
+    <div class="row-product">
         <div v-if="showProduct"> 
           <div class="col-md-2 col-md-offset-1">
           <figure>
@@ -54,7 +54,7 @@
        </button>
      </div>
       </div>
-     <div v-else>
+     <div class="form" v-else>
       <div class="col-md-6">
         <strong>Имя:</strong>
         <input v-model="order.firstName" 	
@@ -66,14 +66,14 @@
          class="form-control"/>  
       </div>
       <div class="form-group">
-        <div class="col-md-12"><strong>Address:</strong></div>
+        <div class="col-md-12"><strong>Адрес:</strong></div>
         <div class="col-md-12">
           <input v-model="order.address"                      
             class="form-control" />
         </div>
       </div>
       <div class="form-group">
-        <div class="col-md-12"><strong>City:</strong></div>
+        <div class="col-md-12"><strong>Город:</strong></div>
         <div class="col-md-12">
           <input v-model="order.city"                      
             class="form-control" />
@@ -85,15 +85,16 @@
           <select v-model="order.state"                
             class="form-control">
             <option disabled value="">Район</option>
-            <option v-for="state in states"
+            <option v-for="(state,key) in states"
                     v-bind:value="state">
+              {{key}}
             </option>
           </select>
         </div>
       </div>
       <div class="form-group">
         <div class="col-md-6 col-md-offset-4">
-        <strong>Zip / Postal Code:</strong>
+        <strong>Почтовый индекс:</strong>
           <input v-model="order.zip"  			
             class="form-control"/>
         </div>
@@ -106,21 +107,21 @@
        v-bind:true-value="order.sendGift"
        v-bind:false-value="order.dontSendGift"
        v-model="order.gift">       				
-          <label for="gift">Ship As Gift?</label>
+          <label for="gift">В подарок?</label>
         </div>
       </div>
       <div class="form-group">
         <div class="col-md-6 boxes">
           <input type="radio"
             id="home"
-            value="домашняя доставка"
+            value="На дом"
             v-model="order.method">                                   
           <label for="home">На дом</label>
           <input type="radio"
             id="business"
-            value="Business"
+            value="Работа"
             v-model="order.method"> 				
-          <label for="business">Business</label>
+          <label for="business">Работа</label>
         </div>
       </div>
       <div class="col-md-12 verify">		       
@@ -142,6 +143,7 @@
             v-on:click="submitForm">Place Order</button> 
         </div>
      </div>
+    </div>
     </div>
     </main>
     </div>
@@ -168,17 +170,17 @@
                 city: '' ,
                 zip: '' ,
                 state: '' ,
-                method: 'домашняя доставка' ,
-                gift: true,
+                method: 'На дом' ,
+                gift:'Простая упаковка' ,
                 sendGift: 'Особенная упаковка',
                 dontSendGift: 'Простая упаковка' 
               },
-              states: [
-                'Киевский' ,
-                'Железнодорожный',
-                'ГРЭС' ,
-                'Свобода'
-              ]
+              states: {
+                КИ: 'Киевский' ,
+                ЖД: 'Железнодорожный',
+                ГР: 'ГРЭС' ,
+                СВ: 'Свобода'
+              }
          }, 
               filters: {	
                 formatPrice: function(price) {	

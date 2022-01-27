@@ -4,11 +4,22 @@ header h1{
 }
 
 body {
-    max-width: 970px;
+    max-width: 1980px;
 }
+
+.form {
+  padding: 10px 20px;
+}
+
+
+.row-product {
+background-color: brown;
+}
+
 .cart {
   padding: 20px 50px;
 }
+
 .boxes {
   margin-top: 20px;
 }
