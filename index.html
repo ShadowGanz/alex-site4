@@ -2,7 +2,7 @@
 <!-- прототип интернет-магазина 'хлеб' -->
 <html> 
   <head>
-    <title>Хлеб с доставкой, в Симферополе</title>
+    <title> Доставка,Симферополь</title>
     <script src="https://unpkg.com/vue"></script>	
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" type="text/css" href="assets/css/app.css"> 
@@ -11,7 +11,7 @@
     <!-- отличие подключения через link(подключение) от script(вызов внешнего кода JS) -->
   </head>
   <body>
-    <div id="app">
+    <div id="app"> 
       <header>	
         <div class="navbar navbar-default">
           <div class="navbar-header">
@@ -30,7 +30,7 @@
         </div>
       </header>	
     <main>
-    <div class="row-product">
+    <div class="row">
         <div v-if="showProduct"> 
           <div class="col-md-2 col-md-offset-1">
           <figure>
@@ -52,30 +52,46 @@
        v-else
         > Товар закончился
        </button>
+       <span class="inventory-message"
+       v-if="product.availableInventory - cartItemCount === 0" >
+      Товар закончился
+      </span>
+      <span class="inventory-message"
+       v-else-if="product.availableInventory - cartItemCount < 5" >
+      Товар заканчивается, осталось {{ product.availableInventory - cartItemCount }} штук
+      </span>
+      <span class="inventory-message"
+      v-else>
+      </span>
+      <div class="rating">
+        <span v-bind:class="{'rating-active': checkRating(n)}"
+        v-for="n in 5" > ☆
+        </span>
+      </div>
      </div>
       </div>
      <div class="form" v-else>
       <div class="col-md-6">
         <strong>Имя:</strong>
-        <input v-model="order.firstName" 	
+        <input v-model.trim="order.firstName" 	
           class="form-control"/>  
       </div>
       <div class="col-md-6">
         <strong>Фамилия:</strong>
-        <input v-model="order.lastName" 
+        <input v-model.trim="order.lastName" 
          class="form-control"/>  
       </div>
       <div class="form-group">
         <div class="col-md-12"><strong>Адрес:</strong></div>
         <div class="col-md-12">
-          <input v-model="order.address"                      
+          <input v-model.trim="order.address"                      
             class="form-control" />
         </div>
       </div>
       <div class="form-group">
         <div class="col-md-12"><strong>Город:</strong></div>
         <div class="col-md-12">
-          <input v-model="order.city"                      
+          <input v-model.trim="order.city"                      
             class="form-control" />
         </div>
       </div>
@@ -95,8 +111,9 @@
       <div class="form-group">
         <div class="col-md-6 col-md-offset-4">
         <strong>Почтовый индекс:</strong>
-          <input v-model="order.zip"  			
-            class="form-control"/>
+          <input v-model.number="order.zip"  			
+            class="form-control"
+            type="number"/>
         </div>
       </div>
       <div class="form-group">
@@ -144,25 +161,17 @@
         </div>
      </div>
     </div>
-    </div>
     </main>
-    </div>
+    </div> <!-- end app (id)  -->
     <script type="text/javascript">
       var webstore = new Vue({	
         el: '#app' ,	
         data: {	
               sitename: 'Магазин' ,
-              product: {	
-                       id: 1001,     	
-                       title: "хлеб ржаной",	
-                       annotation: "Этот хлеб не содержит <em>хлебопекарных дрожжей</em>,"+	
-                        "на ржаной закваске.",	
-                       price: 3000,
-                       keyart: "assets/images/162679.jpg"	 
-              },	
-              cart: [],
-              availableInventory: 5,
               showProduct: true,
+              a: false,
+              cart: [],
+              rating: 3,
               order: {
                 firstName: '' ,
                 lastName: '' , 
@@ -175,6 +184,15 @@
                 sendGift: 'Особенная упаковка',
                 dontSendGift: 'Простая упаковка' 
               },
+              product: {	
+                       id: 1001,     	
+                       title: "хлеб ржаной",	
+                       annotation: "Этот хлеб не содержит <em>хлебопекарных дрожжей</em>,"+	
+                        "на ржаной закваске.",	
+                       price: 3000,
+                       keyart: "assets/images/162679.jpg",
+                       availableInventory: 10	 
+              },	
               states: {
                 КИ: 'Киевский' ,
                 ЖД: 'Железнодорожный',
@@ -200,6 +218,9 @@
                 }
               },
               methods: {
+                checkRating(n) {
+                 return this.product.rating - n >= 0;  
+                },
                 submitForm() {
                   alert('Заказ принят');
                 },
@@ -215,7 +236,7 @@
                   return this.cart.length || '';       
                 },
                 canAddToCart: function() {     
-                  return this.availableInventory > this.cartItemCount;    
+                  return this.product.availableInventory > this.cartItemCount;    
                 }
               },                                  
          });	
