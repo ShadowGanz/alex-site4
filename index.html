@@ -5,6 +5,7 @@
     <title> Доставка,Симферополь</title>
     <script src="https://unpkg.com/vue"></script>	
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.2/axios.js"></script>	
     <link rel="stylesheet" type="text/css" href="assets/css/app.css"> 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
     crossorigin="anonymous">
@@ -30,45 +31,49 @@
         </div>
       </header>	
     <main>
-    <div class="row">
-        <div v-if="showProduct"> 
-          <div class="col-md-2 col-md-offset-1">
+        <div v-if="showProduct">
+          <div v-for="product in products"> 
+          <div class="row">
+          <div class="col-md-5 col-md-offset-0">
           <figure>
             <img v-bind:src="product.keyart"> 
           </figure>
           </div>
-     <div class="col-md-6 col-md-offset-2 description">
+     <div class="col-md-6 col-md-offset-0 description">
        <h1 v-text="product.title"> </h1>
        <h3 v-html="product.annotation"> </h3>
        <h3 class="price">  
          {{ product.price | formatPrice }}
        </h3>
-       <button class="default"
-         @click="addToCart" 
-         v-if="canAddToCart"
+       <button class="btn btn-primary btn-lg"
+         @click="addToCart(product)" 
+         v-if="canAddToCart(product)"
         > В корзину  
        </button>
-       <button class="disabled"
+       <button disabled="true" class="btn btn-primary btn-lg" 
        v-else
         > Товар закончился
        </button>
        <span class="inventory-message"
-       v-if="product.availableInventory - cartItemCount === 0" >
+       v-if="product.availableInventory -cartCount(product.id) === 0" >
       Товар закончился
       </span>
       <span class="inventory-message"
-       v-else-if="product.availableInventory - cartItemCount < 5" >
-      Товар заканчивается, осталось {{ product.availableInventory - cartItemCount }} штук
+       v-else-if="product.availableInventory - cartCount(product.id) < 5" >
+      Товар заканчивается, осталось {{ product.availableInventory - cartCount(product.id) }} штук
       </span>
       <span class="inventory-message"
       v-else>
       </span>
       <div class="rating">
-        <span v-bind:class="{'rating-active': checkRating(n)}"
+        <span v-bind:class="{'rating-active':checkRating(n, product)}"
         v-for="n in 5" > ☆
         </span>
-      </div>
-     </div>
+      </div> 
+    </div><!--  end of col-md-6 -->
+     </div> <!-- end class row -->
+     <hr>
+    </div> <!-- end v-for -->
       </div>
      <div class="form" v-else>
       <div class="col-md-6">
@@ -171,7 +176,6 @@
               showProduct: true,
               a: false,
               cart: [],
-              rating: 3,
               order: {
                 firstName: '' ,
                 lastName: '' , 
@@ -184,22 +188,14 @@
                 sendGift: 'Особенная упаковка',
                 dontSendGift: 'Простая упаковка' 
               },
-              product: {	
-                       id: 1001,     	
-                       title: "хлеб ржаной",	
-                       annotation: "Этот хлеб не содержит <em>хлебопекарных дрожжей</em>,"+	
-                        "на ржаной закваске.",	
-                       price: 3000,
-                       keyart: "assets/images/162679.jpg",
-                       availableInventory: 10	 
-              },	
+              products: {},	          	
               states: {
                 КИ: 'Киевский' ,
                 ЖД: 'Железнодорожный',
                 ГР: 'ГРЭС' ,
                 СВ: 'Свобода'
-              }
-         }, 
+              },
+        },
               filters: {	
                 formatPrice: function(price) {	
                  if (!parseInt(price)) { return "исправьте формат цены"; }	
@@ -216,13 +212,32 @@
                     return (price / 100).toFixed(2) + " руб.";	
                    }
                 }
-              },
+              },	
+              created: function() {	
+                axios.get('./products.json')				
+                  .then((response) =>{
+                    this.products=response.data.products;
+                    console.log(this.products);
+                });
+              },	
               methods: {
-                checkRating(n) {
-                 return this.product.rating - n >= 0;  
+                checkRating(n, myProduct) {
+                 return myProduct.rating - n >= 0;  
                 },
                 submitForm() {
                   alert('Заказ принят');
+                },
+                canAddToCart(aProduct) {
+                 return aProduct.availableInventory > this.cartCount(aProduct.id);
+                },
+                cartCount(id) {
+                  let count = 0;
+                  for (var i = 0; i < this.cart.length; i++) {
+                  if (this.cart[i] === id) {
+                  count++;
+                  } 
+                  }
+                 return count;
                 },
                 addToCart: function() {
                   this.cart.push( this.product.id );
@@ -235,9 +250,6 @@
                 cartItemCount: function() {      
                   return this.cart.length || '';       
                 },
-                canAddToCart: function() {     
-                  return this.product.availableInventory > this.cartItemCount;    
-                }
               },                                  
          });	
     </script>
